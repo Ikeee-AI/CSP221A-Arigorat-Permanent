@@ -2,6 +2,18 @@
 
 import abc
 
+class InsufficientBatteryError(Exception):
+    """Raised when a robot doesn't have enough battery for a task."""
+
+    def __init__(self, robot_name, required, available):
+        self.robot_name = robot_name
+        self.required = required
+        self.available = available
+        message = (
+            f"{robot_name} needs {required}% battery for this task "
+            f"but only has {available}%."
+        )
+        super().__init__(message)
 
 class Robot(abc.ABC):
     """Abstract base class for all robots in the fleet.
@@ -27,6 +39,12 @@ class Robot(abc.ABC):
     def battery(self, value):
         # Always clamp to the 0-100 range, no matter what's passed in.
         self._battery = max(0, min(100, value))
+
+    def use_battery(self, amount):
+        """Spend `amount` battery, or raise if there isn't enough."""
+        if amount > self.battery:
+            raise InsufficientBatteryError(self.name, amount, self.battery)
+        self.battery -= amount
 
     def __str__(self):
         return f"{self.name} ({self.battery}% battery)"
