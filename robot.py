@@ -1,6 +1,24 @@
 """Core Robot base class shared by every robot in the fleet."""
 
 import abc
+import functools
+import logging
+
+def log_action(func):
+    """Log when a robot method starts and finishes, without hiding it.
+
+    Uses functools.wraps so the wrapped method keeps its real __name__
+    and docstring instead of looking like a generic "wrapper".
+    """
+
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        logging.info("%s: starting %s", self.name, func.__name__)
+        result = func(self, *args, **kwargs)
+        logging.info("%s: finished %s", self.name, func.__name__)
+        return result
+
+    return wrapper
 
 class InsufficientBatteryError(Exception):
     """Raised when a robot doesn't have enough battery for a task."""
