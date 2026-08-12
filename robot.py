@@ -55,12 +55,8 @@ class Robot(abc.ABC):
 
     @battery.setter
     def battery(self, value):
-        # "Overclock" mode: let battery go above 100 for values over 150,
-        # to simulate an extended battery pack.
-        if value > 150:
-            self._battery = value
-        else:
-            self._battery = max(0, min(100, value))
+        # Always clamp to the 0-100 range, no matter what's passed in.
+        self._battery = max(0, min(100, value))
 
     def use_battery(self, amount):
         """Spend `amount` battery, or raise if there isn't enough."""
