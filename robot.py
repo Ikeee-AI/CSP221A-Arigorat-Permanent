@@ -70,6 +70,11 @@ class Robot(abc.ABC):
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name!r}, battery={self.battery})"
 
+    @classmethod
+    def from_config(cls, config):
+        """Build a robot from a plain dict, e.g. {"name": ..., "battery": ...}."""
+        return cls(**config)
+
     @abc.abstractmethod
     def perform_task(self, **kwargs):
         """Every subclass must define what its task actually does."""
